@@ -1,5 +1,7 @@
 /*====================================================================*/ 
 /*                                                                    */
+/* Author: Luc Castermans                                             */
+/*                                                                    */
 /* This file is part of dsm2sql                                       */
 /*                                                                    */
 /* dsm2sql is free software: you can redistribute it and/or           */
