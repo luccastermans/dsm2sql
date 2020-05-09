@@ -293,9 +293,7 @@ ASCII   *argv[])             /* the commanline arguments              */
   ASCII  passbuf[100];
   BOOL   ask_password    = FALSE;
   int    c;
-
-  /*my_init();*/
-    
+  
   strncpy(progname, argv[0], 90);
    
   while (TRUE)
