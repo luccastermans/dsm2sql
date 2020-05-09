@@ -62,11 +62,11 @@ static ASCII  qry[TELSIZE];            /* SQL query                   */
 static void telegram2lines(void)
 {
   int i;       /* index in telegram[]     */
-  int j = 0;   /* index telegram_ptrtr[]  */
+  int j = 0;   /* index in telegram_ptr[] */
   int len;     /* length of telegram[]    */
 
   len = strlen(telegram);
-  telegram_ptr[j++] = &telegram[0];  /* de 1ste regel! */ 
+  telegram_ptr[j++] = &telegram[0];       /* the 1ste line! */ 
   
   for ( i = 1 ; i < len; i++ )
   {
@@ -86,7 +86,7 @@ static void telegram2lines(void)
 /*====================================================================*/ 
 /* calculate CRC-16:                                                  */
 /*     http://www.lammertbies.nl/comm/info/nl_crc-calculation.html    */
-/* Algorithme: http://stackoverflow.com/questions/21939392/           */
+/* Algorithm:  http://stackoverflow.com/questions/21939392/           */
 /*             crc-16-program-to-calculate-check-sum                  */
 /*====================================================================*/ 
 static UWORD gen_crc16(ASCII *data, int size)
@@ -94,7 +94,7 @@ static UWORD gen_crc16(ASCII *data, int size)
     UWORD out = 0;
     int bits_read = 0, bit_flag;
 
-    while(size > 0)
+    while ( size > 0 )
     {
         bit_flag = out >> 15;
 
@@ -104,7 +104,7 @@ static UWORD gen_crc16(ASCII *data, int size)
 
         /* Increment bit counter: */
         bits_read++;
-        if(bits_read > 7)
+        if (bits_read > 7)
         {
             bits_read = 0;
             data++;
