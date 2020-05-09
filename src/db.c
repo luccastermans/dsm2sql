@@ -80,10 +80,10 @@ static OPTION_STRUCT long_options[] =
   { "daemon",   no_argument,       NULL_PTR, 'd'},
   { NULL_PTR,   0,                 NULL_PTR,  0 }
 };
-static ASCII  progname[100];          /* name of this program         */
-static BOOL   debug = FALSE;          /* debug mode                   */
+static ASCII  progname[100];                 /* name of this program  */
+static BOOL   debug = FALSE;                 /* debug mode            */
 static ASCII *comm_name_ptr = DEF_COMM_NAME; /* comm port name        */
-static ASCII  sys_time[40];           /* systeem tijd                 */
+static ASCII  sys_time[40];                  /* system time           */
 
 /*====================================================================*/ 
 /*      L O C A L   F U N C T I O N S                                 */ 
@@ -91,7 +91,7 @@ static ASCII  sys_time[40];           /* systeem tijd                 */
 static void   print_error(MYSQL *c_ptr, ASCII  *m_ptr);
 static MYSQL *do_connect(ASCII *hn_ptr,ASCII *un_ptr,ASCII *pwd_ptr,
                          ASCII *dbn_ptr,UWORD  pn, ASCII *sn_ptr, 
-			 UWORD flags);
+                         UWORD flags);
 static void   do_disconnect(MYSQL  *ptr);
 static WORD   process_result_set(MYSQL *c_ptr, MYSQL_RES *res_ptr);
 static WORD   process_query(MYSQL *c_ptr, ASCII *q_ptr, 

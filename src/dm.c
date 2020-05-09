@@ -36,15 +36,15 @@
 #define INTELEGRAM  1
 #define OUTTELEGRAM 0
 #define CRC16       0x8005
-#define NBRREGELS   50
-#define TELGROOTTE  1024
+#define NBRLINES    50
+#define TELSIZE     1024
 
 /*====================================================================*/
 /*      L O C A L   D A T A   D E F I N I T I O N S                   */
 /*====================================================================*/
-static ASCII  telegram[TELGROOTTE];    /* Slimme meter P1 telegram    */
-static ASCII *telegram_ptr[NBRREGELS]; /* De regels in het telegram   */
-static ASCII  qry[TELGROOTTE];         /* SQL query                   */
+static ASCII  telegram[TELSIZE];       /* Dutch Smart Meter telegram  */
+static ASCII *telegram_ptr[NBRLINES];  /* Lines in the telegram       */
+static ASCII  qry[TELSIZE];            /* SQL query                   */
 
 /*====================================================================*/
 /*      L O C A L   F U N C T I O N S   P R O T O T Y P E S           */
@@ -53,13 +53,13 @@ static ASCII  qry[TELGROOTTE];         /* SQL query                   */
 
 
 /*====================================================================*/ 
-/* Converteer telegram naar regels tekst:                             */
+/* Convert telegram to lines of text:                                 */
 /*     "a b c d LF CR"   =>   "a b c d \0 \0"                         */    
 /*     "e f g h LF CR"   =>   "e f g h \0 \0"                         */
 /*     etc.                                                           */    
-/*  en compenseer voor regels met alleen LF CR, m.a.w. lege regels    */
+/*  and compensate for lines with only LF CR, i.e. empty lines        */
 /*====================================================================*/ 
-static void telegram2regels(void)
+static void telegram2lines(void)
 {
   int i;       /* index in telegram[]     */
   int j = 0;   /* index telegram_ptrtr[]  */
@@ -70,21 +70,21 @@ static void telegram2regels(void)
   
   for ( i = 1 ; i < len; i++ )
   {
-    if ( telegram[i] == '\r' )            /* LF gevonden         */
+    if ( telegram[i] == '\r' )            /* LF found            */
     {
       telegram[i++] = EOS;                /* LF -> '\0'          */
       telegram[i++] = EOS;                /* CR -> '\0'          */
       if ( telegram[i] != '\r' )
-        telegram_ptr[j++] = &telegram[i]; /* bewaar begin regel  */
+        telegram_ptr[j++] = &telegram[i]; /* store start of line */
       else
-        i--;                              /* 'lege'-regel        */
+        i--;                              /* 'empty'-line        */
     }
   }
 }
 
 
 /*====================================================================*/ 
-/* Bereken CRC-16:                                                    */
+/* calculate CRC-16:                                                  */
 /*     http://www.lammertbies.nl/comm/info/nl_crc-calculation.html    */
 /* Algorithme: http://stackoverflow.com/questions/21939392/           */
 /*             crc-16-program-to-calculate-check-sum                  */
@@ -140,17 +140,17 @@ static UWORD gen_crc16(ASCII *data, int size)
 
 /*====================================================================*/ 
 /*                                                                    */
-BOOL DM_rcv_telegram(                 /* geldig telegram ontvangen?   */
-                     ASCII port[])    /* RS232 poort om van te lezen  */
+BOOL DM_rcv_telegram(                 /* valid telegram received?     */
+                     ASCII port[])    /* read from this RS232 port    */
 /*====================================================================*/ 
 {
   int   comport   = -1;               /* COM port nr            */
   BYTE  buf[4096];                    /* RS232 ontvangst buffer */
   int   i;                            /* index in buf[]         */
-  int   n;                            /* #ontvangen karakters   */
+  int   n;                            /* #received characters   */
   int   t = 0;                        /* index in telegram[]    */
-  UWORD crc_cal;                      /* berekende CRC          */
-  UWORD crc_rcv;                      /* ontvangen CRC          */
+  UWORD crc_cal;                      /* calculated CRC         */
+  UWORD crc_rcv;                      /* received CRC           */
 
   comport = RS232_GetPortnr(port);
   if (RS232_OpenComport(comport, 115200, "8N1"))
@@ -197,11 +197,11 @@ BOOL DM_rcv_telegram(                 /* geldig telegram ontvangen?   */
 
   RS232_CloseComport(comport);
 
-  /*====================================*/
-  /* bereken CRC van het telegram,      */
-  /* lees de CRC uit ontvangen telegram */ 
-  /* en vergelijk deze CRC              */
-  /*====================================*/
+  /*=====================================*/
+  /* calc CRC of the telegram,           */
+  /* read the CRC from received telegram */ 
+  /* and compare the CRC´s               */
+  /*=====================================*/
 
   crc_cal = gen_crc16((ASCII *)&telegram[0], strlen(telegram)-6);
   sscanf(&telegram[strlen(telegram)-6],"%hx", &crc_rcv);
@@ -211,7 +211,7 @@ BOOL DM_rcv_telegram(                 /* geldig telegram ontvangen?   */
 
 
 /*====================================================================*/ 
-/* converteer datum naar MySQL formaat                                */
+/* convert date to MySQL format                                       */
 static void date2mysql(
                 ASCII *in_ptr,         /* input:  YYMMDDhhmmssX       */
                 ASCII *out_ptr)        /* output: YYYY-MM-DD HH:MM:SS */
@@ -249,24 +249,24 @@ static void clear_str(ASCII *ptr,     /* string to clear              */
 
 
 /*====================================================================*/ 
-/* initialiseer globale variabelen                                    */
+/* initialise global variabels                                        */
 /*====================================================================*/ 
 void DM_init(void)
 {
   int i;
   
-  for ( i = 0; i < NBRREGELS; i++ )
+  for ( i = 0; i < NBRLINES; i++ )
     telegram_ptr[i] = NULL_PTR;
   
-  clear_str(telegram, TELGROOTTE);
-  clear_str(qry, TELGROOTTE);
+  clear_str(telegram, TELSIZE);
+  clear_str(qry, TELSIZE);
 }
 
 
 /*====================================================================*/ 
 /*                                                                    */
 /*====================================================================*/ 
-static void regels2qry(void)
+static void lines2qry(void)
 {
   int i;
   ASCII dat_in[20];
@@ -367,8 +367,8 @@ void DM_telegram2qry(
 {
   if ( strlen(telegram) > 0 )  /* check if telegram receveid ? */
   {
-    telegram2regels(); 
-    regels2qry();
+    telegram2lines(); 
+    lines2qry();
   }
 }  
 
@@ -391,5 +391,3 @@ ASCII *DM_get_telegram(
 {
   return telegram;
 }  
-
-
