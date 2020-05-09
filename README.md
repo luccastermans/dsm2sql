@@ -74,16 +74,26 @@ dsm2sql assumes presence of a database with the table which will be
 created by below SQL code. The name of the database can be chosen
 freely.
 
-> \$ cat createdb.sql CREATE DATABASE IF NOT EXISTS \`energie\`; DROP
-> TABLE IF EXISTS \`emeter\`; CREATE TABLE \`emeter\` ( \`id\` int(11)
-> unsigned NOT NULL AUTO\_INCREMENT, \`e\_dattijd\` datetime DEFAULT
-> NULL, \`e\_ver\_t1\` float(9,3) DEFAULT NULL, \`e\_ver\_t2\`
-> float(9,3) DEFAULT NULL, \`e\_ter\_t1\` float(9,3) DEFAULT NULL,
-> \`e\_ter\_t2\` float(9,3) DEFAULT NULL, \`t\` tinyint(1) unsigned
-> DEFAULT NULL, \`e\_ver\_mom\` float(5,3) DEFAULT NULL, \`e\_ter\_mom\`
-> float(5,3) DEFAULT NULL, \`g\_dattijd\` datetime DEFAULT NULL,
-> \`g\_ver\` float(8,3) DEFAULT NULL, PRIMARY KEY (\`id\`) )
-> ENGINE=InnoDB AUTO\_INCREMENT=4330 DEFAULT CHARSET=latin1;
+```
+$ cat createdb.sql
+CREATE DATABASE IF NOT EXISTS `energie`;
+DROP TABLE IF EXISTS `emeter`;
+CREATE TABLE `emeter` (
+  `id`        int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `e_dattijd` datetime DEFAULT NULL,
+  `e_ver_t1`  float(9,3) DEFAULT NULL,
+  `e_ver_t2`  float(9,3) DEFAULT NULL,
+  `e_ter_t1`  float(9,3) DEFAULT NULL,
+  `e_ter_t2`  float(9,3) DEFAULT NULL,
+  `t`         tinyint(1) unsigned DEFAULT NULL,
+  `e_ver_mom` float(5,3) DEFAULT NULL,
+  `e_ter_mom` float(5,3) DEFAULT NULL,
+  `g_dattijd` datetime DEFAULT NULL,
+  `g_ver`     float(8,3) DEFAULT NULL,
+   PRIMARY KEY (`id`)
+  ) ENGINE=InnoDB AUTO_INCREMENT=4330 DEFAULT CHARSET=latin1;
+
+```
 
 EXAMPLE
 =======
@@ -91,36 +101,50 @@ EXAMPLE
 To read one telegram using a Raspberry PI from port P1 and view the
 resulting MySQL-INSERT query:
 
-> \$ **dsm2sql** -u account -c ttyAMA0 -pyrpassword db\_name -d
-> /KFM5KAIFA-METER 1-3:0.2.8(42) 0-0:1.0.0(161106115629W)
-> 0-0:96.1.1(idfrommymeter) 1-0:1.8.1(000350.759\*kWh)
-> 1-0:1.8.2(000159.184\*kWh) 1-0:2.8.1(000358.177\*kWh)
-> 1-0:2.8.2(001041.184\*kWh) 0-0:96.14.0(0001) 1-0:1.7.0(00.000\*kW)
-> 1-0:2.7.0(00.998\*kW) 0-0:96.7.21(00001) 0-0:96.7.9(00001)
-> 1-0:99.97.0(1)(0-0:96.7.19)(000101000011W)(2147483647\*s)
-> 1-0:32.32.0(00000) 1-0:52.32.0(00000) 1-0:72.32.0(00000)
-> 1-0:32.36.0(00000) 1-0:52.36.0(00000) 1-0:72.36.0(00000) 0-0:96.13.1()
-> 0-0:96.13.0() 1-0:31.7.0(000\*A) 1-0:51.7.0(005\*A) 1-0:71.7.0(002\*A)
-> 1-0:21.7.0(00.018\*kW) 1-0:41.7.0(00.000\*kW) 1-0:61.7.0(00.220\*kW)
-> 1-0:22.7.0(00.000\*kW) 1-0:42.7.0(01.258\*kW) 1-0:62.7.0(00.000\*kW)
-> 0-1:24.1.0(003) 0-1:96.1.0(idfrommymeter)
-> 0-1:24.2.1(161106110000W)(00185.352\*m3) !7AC8 \[2016-11-06 10:56:32\]
-> INSERT INTO emeter (e\_dattijd,
-> e\_ver\_t1,e\_ver\_t2,e\_ter\_t1,e\_ter\_t2,t,
-> e\_ver\_mom,e\_ter\_mom,g\_dattijd,g\_ver) VALUES (\"2016-11-06
-> 11:56:29\",000350.759,000159.184,000358.177,001041.184,0001,00.000,00.998,\"2016-11-06
-> 11:00:00\",00185.352); \$
+```
+$ dsm2sql -u account -c ttyAMA0 -pyrpassword db_name -d
+/KFM5KAIFA-METER
+1-3:0.2.8(42)
+0-0:1.0.0(161106115629W)
+0-0:96.1.1(idfrommymeter)
+1-0:1.8.1(000350.759*kWh)
+1-0:1.8.2(000159.184*kWh)
+1-0:2.8.1(000358.177*kWh)
+1-0:2.8.2(001041.184*kWh)
+0-0:96.14.0(0001)
+1-0:1.7.0(00.000*kW)
+1-0:2.7.0(00.998*kW)
+0-0:96.7.21(00001)
+0-0:96.7.9(00001)
+1-0:99.97.0(1)(0-0:96.7.19)(000101000011W)(2147483647*s)
+1-0:32.32.0(00000)
+1-0:52.32.0(00000)
+1-0:72.32.0(00000)
+1-0:32.36.0(00000)
+1-0:52.36.0(00000)
+1-0:72.36.0(00000)
+0-0:96.13.1()
+0-0:96.13.0()
+1-0:31.7.0(000*A)
+1-0:51.7.0(005*A)
+1-0:71.7.0(002*A)
+1-0:21.7.0(00.018*kW)
+1-0:41.7.0(00.000*kW)
+1-0:61.7.0(00.220*kW)
+1-0:22.7.0(00.000*kW)
+1-0:42.7.0(01.258*kW)
+1-0:62.7.0(00.000*kW)
+0-1:24.1.0(003)
+0-1:96.1.0(idfrommymeter)
+0-1:24.2.1(161106110000W)(00185.352*m3)
+!7AC8
+[2016-11-06 10:56:32] INSERT INTO emeter (e_dattijd,
+e_ver_t1,e_ver_t2,e_ter_t1,e_ter_t2,t,
+e_ver_mom,e_ter_mom,g_dattijd,g_ver) VALUES ("2016-11-06
+11:56:29",000350.759,000159.184,000358.177,001041.184,0001,00.000,00.998,"2016-11-06
+11:00:00",00185.352);
+```
 
-AUTEUR
+AUTHOR
 ======
-
 Luc Castermans \<luc.castermans\@gmail.com\>
-
-> Auteur.
-
-OPMERKINGEN
-===========
-
--   the website of dsm2sql
-
-    http://www.castermans.org/dsm2sql
