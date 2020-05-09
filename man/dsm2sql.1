@@ -1,0 +1,160 @@
+'\" t
+.\"     Title: \fBdsm2sql\fR
+.\"    Author: Luc Castermans <luc.castermans@gmail.com>
+.\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
+.\"      Date: 2019-09-30
+.\"    Manual: Gebruikershandleiding voor dsm2sql
+.\"    Source: dsm2sql 0.1
+.\"  Language: Dutch
+.\"
+.TH "\FBdsm2sql\FR" "1" "2019\-09\-30" "dsm2sql 0.1" "Usermanual for dsm2sql"
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+.SH "NAME"
+\fBdsm2sql\fR \- read Dutch Smart Meter (DSM) telegrams from port P1 and convert to MariaDB-INSERT queries
+.SH "SYNOPSIS"
+.HP \w'\fBdsm2sql\fR\ 'u
+\fBdsm2sql\fR [\fB\-h host\fR]  [\fB\-P port\fR] [\fB\-u username\fR] [\fB \-ppassword\fR] [\fB\-c comport\fR]  [\fB\-d \fR] \fBdb_name\fR
+.SH "DESCRIPTION"
+.PP
+sdm2sql reads telegrams from a Dutch Smart Meter (DSM) from port P1 and convert these to MariaDB-INSERT queries such that the data can be stored in a MariaDB or similar database. Each telegram contains a checksum, only telegrams with a correct checksum are processed by dsm2sql.
+.PP
+\fBWarning\fR: the computer running dsm2sql should be equipped with a serial port which is connect the DSM's port P1. In case of a Raspberry PI a special cable is required. 
+.PP
+A Dutch Smart Meter (DSM), is actually not smart, "smart" only means the meter can be read by the utility provider. From the start the specification of a DSM contains a port P1 which interface description is "open". The interface of P1 is fully described in a requirement specification. This implies that the precise way of working can be read by reading the specification. Since the start the specification was updated a number of times. All specifications can be found at on the website of Netbeheer Nederland, <https://www.netbeheernederland.nl/>.
+.PP
+dsm2sql was written for a DSM which complies to version 4.2, as described in: "Dutch Smart Meter Requirements v4.2.2 Final P1 (14 March 2014)"\&.
+.SH "OPTIONS"
+.PP
+\fB\-h host\fR
+.RS 4
+connect to the MariaDB server on the given host\&.
+.RE
+.PP
+\fB\-P port\fR
+.RS 4
+the TCP/IP port number to use for the connection to the MariaDB host (default 3306)\&.
+.RE
+.PP
+\fB\-u username\fR
+.RS 4
+the MariaDB user name to use when connecting to the server\&.
+.RE
+.PP
+\fB\-ppassword\fR
+.RS 4
+the password to use when connecting to the server\&.
+.RE
+.PP
+\fB\-c comport\fR
+.RS 4
+RS232 port on de computer running dsm2sql. On Raspberry PI: ttyAMA0\&.
+.RE
+.PP
+\fB\-d\fR
+.RS 4
+only write the MariaDB-INSERT to stdout\&.
+.RE
+.PP
+\fBdb_name\fR
+.RS 4
+name of the database\&.
+.RE
+.SH "DATABASE" 
+.PP
+dsm2sql assumes presence of a database with the table which will be created by below SQL code. The name of the database can be chosen freely\&.
+.PP
+.RS 2
+.FT CW
+$ cat createdb.sql\p
+CREATE DATABASE IF NOT EXISTS `energie`;\p
+DROP TABLE IF EXISTS `emeter`;\p
+CREATE TABLE `emeter` (\p
+ `id`        int(11) unsigned NOT NULL AUTO_INCREMENT,\p
+ `e_dattijd` datetime DEFAULT NULL,\p
+ `e_ver_t1`  float(9,3) DEFAULT NULL,\p
+ `e_ver_t2`  float(9,3) DEFAULT NULL,\p
+ `e_ter_t1`  float(9,3) DEFAULT NULL,\p
+ `e_ter_t2`  float(9,3) DEFAULT NULL,\p
+ `t`         tinyint(1) unsigned DEFAULT NULL,\p
+ `e_ver_mom` float(5,3) DEFAULT NULL,\p
+ `e_ter_mom` float(5,3) DEFAULT NULL,\p
+ `g_dattijd` datetime DEFAULT NULL,\p
+ `g_ver`     float(8,3) DEFAULT NULL,\p
+ PRIMARY KEY (`id`)\p
+) ENGINE=InnoDB AUTO_INCREMENT=4330 DEFAULT CHARSET=latin1;\p
+.FT P
+.SH "EXAMPLE" 
+.PP
+To read one telegram using a Raspberry PI from port P1 and view the resulting MySQL-INSERT query:
+.PP
+.RS 2
+.FT CW
+$ \fBdsm2sql\fR -u account -c ttyAMA0 -pyrpassword db_name -d\p
+/KFM5KAIFA-METER\p
+1-3:0.2.8(42)\p
+0-0:1.0.0(161106115629W)\p
+0-0:96.1.1(idfrommymeter)\p
+1-0:1.8.1(000350.759*kWh)\p
+1-0:1.8.2(000159.184*kWh)\p
+1-0:2.8.1(000358.177*kWh)\p
+1-0:2.8.2(001041.184*kWh)\p
+0-0:96.14.0(0001)\p
+1-0:1.7.0(00.000*kW)\p
+1-0:2.7.0(00.998*kW)\p
+0-0:96.7.21(00001)\p
+0-0:96.7.9(00001)\p
+1-0:99.97.0(1)(0-0:96.7.19)(000101000011W)(2147483647*s)\p
+1-0:32.32.0(00000)\p
+1-0:52.32.0(00000)\p
+1-0:72.32.0(00000)\p
+1-0:32.36.0(00000)\p
+1-0:52.36.0(00000)\p
+1-0:72.36.0(00000)\p
+0-0:96.13.1()\p
+0-0:96.13.0()\p
+1-0:31.7.0(000*A)\p
+1-0:51.7.0(005*A)\p
+1-0:71.7.0(002*A)\p
+1-0:21.7.0(00.018*kW)\p
+1-0:41.7.0(00.000*kW)\p
+1-0:61.7.0(00.220*kW)\p
+1-0:22.7.0(00.000*kW)\p
+1-0:42.7.0(01.258*kW)\p
+1-0:62.7.0(00.000*kW)\p
+0-1:24.1.0(003)\p
+0-1:96.1.0(idfrommymeter)\p
+0-1:24.2.1(161106110000W)(00185.352*m3)\p
+!7AC8\p
+[2016-11-06 10:56:32] INSERT INTO emeter (e_dattijd, e_ver_t1,e_ver_t2,e_ter_t1,e_ter_t2,t, e_ver_mom,e_ter_mom,g_dattijd,g_ver) VALUES ("2016-11-06 11:56:29",000350.759,000159.184,000358.177,001041.184,0001,00.000,00.998,"2016-11-06 11:00:00",00185.352);\p
+$\p
+.FT P
+.RE
+.SH "AUTEUR"
+.PP
+Luc Castermans <luc.castermans@gmail.com>\p
+.RS 4
+Auteur\&.
+.SH "OPMERKINGEN"
+.IP " 1." 4
+the website of dsm2sql
+.RS 4
+\%http://www.castermans.org/dsm2sql
+.RE

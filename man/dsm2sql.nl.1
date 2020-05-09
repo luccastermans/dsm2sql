@@ -1,0 +1,160 @@
+'\" t
+.\"     Title: \fBdsm2sql\fR
+.\"    Author: Luc Castermans <luc.castermans@gmail.com>
+.\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
+.\"      Date: 2019-09-30
+.\"    Manual: Gebruikershandleiding voor dsm2sql
+.\"    Source: dsm2sql 0.1
+.\"  Language: Dutch
+.\"
+.TH "\FBdsm2sql\FR" "1" "2019\-09\-30" "dsm2sql 0.1" "Gebruikershandleiding voor dsm2sql"
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+.SH "NAME"
+\fBdsm2sql\fR \- lees Dutch Smart Meter (DSM) telegrammen uit de P1 poort en converteer naar MariaDB-INSERT queries
+.SH "SAMENVATTING"
+.HP \w'\fBdsm2sql\fR\ 'u
+\fBdsm2sql\fR [\fB\-h host\fR]  [\fB\-P port\fR] [\fB\-u username\fR] [\fB \-ppassword\fR] [\fB\-c comport\fR]  [\fB\-d \fR] \fBdb_name\fR
+.SH "BESCHRIJVING"
+.PP
+dsm2sql leest telegrammen uit een Dutch Smart Meter (DSM) via P1 poort en converteerd deze naar MariaDB-INSERT queries zodat de data bewaard kan worden in een MariaDB (of soortgelijke) database. Elk telegram wordt door de DSM voorzien van een checksum, alleen telegrammen met een kloppende checksum worden verwerkt door dsm2sql.
+.PP
+\fBLet op\fR: de computer waarop dsm2sql draait moet voorzien zijn van een seri\[:e]le poort die op P1 wordt aangesloten. In het geval van een Raspberry PI is hiervoor een speciale kabel nodig. 
+.PP
+Een Dutch Smart Meter (DSM) alias "slimme meter", is eigenlijk niet slim, met "slim" wordt slechts bedoeld dat hij op afstand uitgelezen kan worden door de netwerk beheerder. Vanaf het begin heeft men bij de specificatie van deze meters ingebouwd dat deze een voorziening moeten hebben om ook lokaal uitgelezen te kunnen worden. Deze voorziening is de zogenoemde P1 poort die daaarom op elke DSM aanwezig is. De specificatie van poort P1 is open, dat betekent dat je de precieze werking van deze poort kunt opzoeken in een specificatie. Van aanvang af is de specificatie periodiek bijgesteld, dit heeft daarom geleid tot verschillende versies. Alle specificaties zijn te vinden op de website van Netbeheer Nederland, <https://www.netbeheernederland.nl/>.
+.PP
+dsm2sql is geschreven voor een DSM die voldoet aan versie 4.2, beschreven in: "Dutch Smart Meter Requirements v4.2.2 Final P1 (14 maart 2014)"\&.
+.SH "OPTIES"
+.PP
+\fB\-h host\fR
+.RS 4
+verbind met MariaDB op de gegeven host
+.RE
+.PP
+\fB\-P port\fR
+.RS 4
+verbind met TCP/IP port op de MariaDB host (default 3306)\&.
+.RE
+.PP
+\fB\-u username\fR
+.RS 4
+gebruikersnaam van het MariaDB account\&.
+.RE
+.PP
+\fB\-ppassword\fR
+.RS 4
+wachtwoord van het MariaDB account\&.
+.RE
+.PP
+\fB\-c comport\fR
+.RS 4
+RS232 poort op de computer waarop dsm2sql draait. Op Raspberry PI: ttyAMA0\&.
+.RE
+.PP
+\fB\-d\fR
+.RS 4
+schrijf de MariaDB-INSERT query alleen naar stdout\&.
+.RE
+.PP
+\fBdb_name\fR
+.RS 4
+naam van de database\&.
+.RE
+.SH "DATABASE" 
+.PP
+dsm2sql verondersteld een database met de tabel die met de hieronder gegeven SQL code aangemaakt kan worden. De naam van de database kan willekeurig gekozen worden.\&.
+.PP
+.RS 2
+.FT CW
+$ cat createdb.sql\p
+CREATE DATABASE IF NOT EXISTS `energie`;\p
+DROP TABLE IF EXISTS `emeter`;\p
+CREATE TABLE `emeter` (\p
+ `id`        int(11) unsigned NOT NULL AUTO_INCREMENT,\p
+ `e_dattijd` datetime DEFAULT NULL,\p
+ `e_ver_t1`  float(9,3) DEFAULT NULL,\p
+ `e_ver_t2`  float(9,3) DEFAULT NULL,\p
+ `e_ter_t1`  float(9,3) DEFAULT NULL,\p
+ `e_ter_t2`  float(9,3) DEFAULT NULL,\p
+ `t`         tinyint(1) unsigned DEFAULT NULL,\p
+ `e_ver_mom` float(5,3) DEFAULT NULL,\p
+ `e_ter_mom` float(5,3) DEFAULT NULL,\p
+ `g_dattijd` datetime DEFAULT NULL,\p
+ `g_ver`     float(8,3) DEFAULT NULL,\p
+ PRIMARY KEY (`id`)\p
+) ENGINE=InnoDB AUTO_INCREMENT=4330 DEFAULT CHARSET=latin1;\p
+.FT P
+.SH "VOORBEELDEN" 
+.PP
+Om m.b.v. een Raspberry PI een telegram van de P1 poort te lezen en de bijbehordende MySQL-INSERT query te zien:
+.PP
+.RS 2
+.FT CW
+$ \fBdsm2sql\fR -u account -c ttyAMA0 -pyrpassword db_name -d\p
+/KFM5KAIFA-METER\p
+1-3:0.2.8(42)\p
+0-0:1.0.0(161106115629W)\p
+0-0:96.1.1(idvanmijnslimmeelektriciteitsmeter)\p
+1-0:1.8.1(000350.759*kWh)\p
+1-0:1.8.2(000159.184*kWh)\p
+1-0:2.8.1(000358.177*kWh)\p
+1-0:2.8.2(001041.184*kWh)\p
+0-0:96.14.0(0001)\p
+1-0:1.7.0(00.000*kW)\p
+1-0:2.7.0(00.998*kW)\p
+0-0:96.7.21(00001)\p
+0-0:96.7.9(00001)\p
+1-0:99.97.0(1)(0-0:96.7.19)(000101000011W)(2147483647*s)\p
+1-0:32.32.0(00000)\p
+1-0:52.32.0(00000)\p
+1-0:72.32.0(00000)\p
+1-0:32.36.0(00000)\p
+1-0:52.36.0(00000)\p
+1-0:72.36.0(00000)\p
+0-0:96.13.1()\p
+0-0:96.13.0()\p
+1-0:31.7.0(000*A)\p
+1-0:51.7.0(005*A)\p
+1-0:71.7.0(002*A)\p
+1-0:21.7.0(00.018*kW)\p
+1-0:41.7.0(00.000*kW)\p
+1-0:61.7.0(00.220*kW)\p
+1-0:22.7.0(00.000*kW)\p
+1-0:42.7.0(01.258*kW)\p
+1-0:62.7.0(00.000*kW)\p
+0-1:24.1.0(003)\p
+0-1:96.1.0(idvanmijnmeter)\p
+0-1:24.2.1(161106110000W)(00185.352*m3)\p
+!7AC8\p
+[2016-11-06 10:56:32] INSERT INTO emeter (e_dattijd, e_ver_t1,e_ver_t2,e_ter_t1,e_ter_t2,t, e_ver_mom,e_ter_mom,g_dattijd,g_ver) VALUES ("2016-11-06 11:56:29",000350.759,000159.184,000358.177,001041.184,0001,00.000,00.998,"2016-11-06 11:00:00",00185.352);\p
+$\p
+.FT P
+.RE
+.SH "AUTEUR"
+.PP
+Luc Castermans <luc.castermans@gmail.com>\p
+.RS 4
+Auteur\&.
+.SH "OPMERKINGEN"
+.IP " 1." 4
+de website van dsm2sql
+.RS 4
+\%http://www.castermans.org/dsm2sql
+.RE
