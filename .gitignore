@@ -1,2 +1,3 @@
 *.o
 debian/
+src/dsm2sql

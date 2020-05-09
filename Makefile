@@ -19,7 +19,7 @@
 
 prefix = /usr
 
-CFLAGS = -Wall -Wextra  -I/usr/include/mysql
+CFLAGS = -Wall -Wextra  -I/usr/include/mariadb
 OBJ    = src/dm.o  src/rs232.o  src/db.o  src/get_password.o
 LIBS   =  -lmariadbclient
 
