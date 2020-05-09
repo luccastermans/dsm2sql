@@ -7,8 +7,7 @@ convert to MariaDB-INSERT queries
 SYNOPSIS
 ========
 
-**dsm2sql** \[**-h host**\] \[**-P port**\] \[**-u username**\] \[**
--ppassword**\] \[**-c comport**\] \[**-d **\] **db\_name**
+**dsm2sql** \[**-h host**\] \[**-P port**\] \[**-u username**\] \[**-ppassword**\] \[**-c comport**\] \[**-d **\] **db\_name**
 
 DESCRIPTION
 ===========
@@ -39,33 +38,32 @@ OPTIONS
 =======
 
 **-h host**
-
-> connect to the MariaDB server on the given host.
+     
+     connect to the MariaDB server on the given host.
 
 **-P port**
 
-> the TCP/IP port number to use for the connection to the MariaDB host
-> (default 3306).
+     the TCP/IP port number to use for the connection to the MariaDB host (default 3306).
 
 **-u username**
 
-> the MariaDB user name to use when connecting to the server.
+     the MariaDB user name to use when connecting to the server.
 
 **-ppassword**
 
-> the password to use when connecting to the server.
+    the password to use when connecting to the server.
 
 **-c comport**
 
-> RS232 port on de computer running dsm2sql. On Raspberry PI: ttyAMA0.
+    RS232 port on de computer running dsm2sql. On Raspberry PI: ttyAMA0.
 
 **-d**
 
-> only write the MariaDB-INSERT to stdout.
+    only write the MariaDB-INSERT to stdout.
 
 **db\_name**
 
-> name of the database.
+    name of the database.
 
 DATABASE
 ========
