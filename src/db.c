@@ -424,7 +424,7 @@ ASCII   *argv[])
 
   if (sqldb_ptr != NULL_PTR && 
       comm_name_ptr != NULL_PTR &&
-      open_comport(comm_name_ptr, 115200, "8N1") )
+      open_comport(comm_name_ptr, 115200, "8N1") >= 0 )
   {  
     DM_init();
   
@@ -459,6 +459,11 @@ ASCII   *argv[])
     
     do_disconnect(sqldb_ptr);
   }
+  else
+  {
+    printf("No SQL DB or comport name or could not open comport.\n");
+  }
+
     
   mysql_library_end();
   
