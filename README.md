@@ -17,7 +17,7 @@ convert these to MariaDB-INSERT queries such that the data can be stored
 in a MariaDB or similar database. Each telegram contains a checksum,
 only telegrams with a correct checksum are output by dsm2sql.
 
-**Warning**: the computer running dsm2sql should be equipped with a
+**Note**: the computer running dsm2sql should be equipped with a
 serial port which is connect the DSM\'s port P1. In case of a Raspberry
 PI a special cable is required.
 
@@ -39,19 +39,19 @@ OPTIONS
 
 **-h host**
      
-     connect to the MariaDB server on the given host.
+     host name of the MariaDB server.
 
 **-P port**
 
-     the TCP/IP port number to use for the connection to the MariaDB host (default 3306).
+     TCP/IP port number to connect to the MariaDB host (default 3306).
 
 **-u username**
 
-     the MariaDB user name to use when connecting to the server.
+     user name to connect to the server.
 
 **-ppassword**
 
-    the password to use when connecting to the server.
+     password to connect to the server.
 
 **-c comport**
 
@@ -59,7 +59,7 @@ OPTIONS
 
 **-d**
 
-    only write the MariaDB-INSERT to stdout.
+    write the MariaDB-INSERT output to stdout only (used for debugging).
 
 **db\_name**
 
