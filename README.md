@@ -15,7 +15,7 @@ DESCRIPTION
 sdm2sql reads telegrams from a Dutch Smart Meter (DSM) from port P1 and
 convert these to MariaDB-INSERT queries such that the data can be stored
 in a MariaDB or similar database. Each telegram contains a checksum,
-only telegrams with a correct checksum are processed by dsm2sql.
+only telegrams with a correct checksum are output by dsm2sql.
 
 **Warning**: the computer running dsm2sql should be equipped with a
 serial port which is connect the DSM\'s port P1. In case of a Raspberry
