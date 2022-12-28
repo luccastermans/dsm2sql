@@ -276,7 +276,7 @@ static void lines2qry(void)
   strcat(qry, "INSERT INTO emeter "\
                  "(e_dattijd,"\
                  " e_ver_t1,e_ver_t2,e_ter_t1,e_ter_t2,t,"\
-                 " e_ver_mom,e_ter_mom,g_dattijd,g_ver) "\
+                 " e_ver_mom,e_ter_mom,l1,l2,l3,g_dattijd,g_ver) "\
                  "VALUES (");
  
   for ( i = 0;  telegram_ptr[i] != NULL_PTR; i++ )
@@ -294,11 +294,6 @@ static void lines2qry(void)
       strcat(qry, "\"");
       strcat(qry, dat_out);
       strcat(qry, "\",");
-    }
-    else if ( sscanf(telegram_ptr[i], "0-0:96.14.0(%4s)", h) == 1 )
-    {
-      strcat(qry, h);
-      strcat(qry, ",");
     }
     else if ( sscanf(telegram_ptr[i], "1-0:1.8.1(%6s.%3s*kWh)", h, d) == 2 )
     {
@@ -328,6 +323,11 @@ static void lines2qry(void)
       strcat(qry, d);
       strcat(qry, ",");
     }
+    else if ( sscanf(telegram_ptr[i], "0-0:96.14.0(%4s)", h) == 1 )
+    {
+      strcat(qry, h);
+      strcat(qry, ",");
+    }
     else if ( sscanf(telegram_ptr[i], "1-0:1.7.0(%2s.%3s*kW)", h, d) == 2 )
     {
       strcat(qry, h);
@@ -339,6 +339,24 @@ static void lines2qry(void)
     {
       strcat(qry, h);
       strcat(qry, ".");
+      strcat(qry, d);
+      strcat(qry, ",");
+    }
+    else if ( sscanf(telegram_ptr[i], "1-0:31.7.0(%3s*A)", d) == 1 )
+    {
+
+      strcat(qry, d);
+      strcat(qry, ",");
+    }
+    else if ( sscanf(telegram_ptr[i], "1-0:51.7.0(%3s*A)", d) == 1 )
+    {
+
+      strcat(qry, d);
+      strcat(qry, ",");
+    }
+    else if ( sscanf(telegram_ptr[i], "1-0:71.7.0(%3s*A)", d) == 1 )
+    {
+
       strcat(qry, d);
       strcat(qry, ",");
     }
@@ -365,7 +383,7 @@ void DM_telegram2qry(
                      void)
 /*====================================================================*/ 
 {
-  if ( strlen(telegram) > 0 )  /* check if telegram receveid ? */
+  if ( strlen(telegram) > 0 )  /* check if telegram received ? */
   {
     telegram2lines(); 
     lines2qry();
