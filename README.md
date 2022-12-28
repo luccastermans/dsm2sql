@@ -15,9 +15,9 @@ DESCRIPTION
 sdm2sql reads telegrams from a Dutch Smart Meter (DSM) from port P1 and
 convert these to MariaDB-INSERT queries such that the data can be stored
 in a MariaDB or similar database. Each telegram contains a checksum,
-only telegrams with a correct checksum are processed by dsm2sql.
+only telegrams with a correct checksum are output by dsm2sql.
 
-**Warning**: the computer running dsm2sql should be equipped with a
+**Note**: the computer running dsm2sql should be equipped with a
 serial port which is connect the DSM\'s port P1. In case of a Raspberry
 PI a special cable is required.
 
@@ -39,19 +39,19 @@ OPTIONS
 
 **-h host**
      
-     connect to the MariaDB server on the given host.
+     host name of the MariaDB server.
 
 **-P port**
 
-     the TCP/IP port number to use for the connection to the MariaDB host (default 3306).
+     TCP/IP port number to connect to the MariaDB host (default 3306).
 
 **-u username**
 
-     the MariaDB user name to use when connecting to the server.
+     user name to connect to the server.
 
 **-ppassword**
 
-    the password to use when connecting to the server.
+     password to connect to the server.
 
 **-c comport**
 
@@ -59,7 +59,7 @@ OPTIONS
 
 **-d**
 
-    only write the MariaDB-INSERT to stdout.
+    write the MariaDB-INSERT output to stdout only (used for debugging).
 
 **db\_name**
 
@@ -84,6 +84,9 @@ CREATE TABLE `emeter` (
   `e_ter_t1`  float(9,3) DEFAULT NULL,
   `e_ter_t2`  float(9,3) DEFAULT NULL,
   `t`         tinyint(1) unsigned DEFAULT NULL,
+  `l1`        int(10) unsigned DEFAULT NULL,
+  `l2`        int(10) unsigned DEFAULT NULL,
+  `l3`        int(10) unsigned DEFAULT NULL,
   `e_ver_mom` float(5,3) DEFAULT NULL,
   `e_ter_mom` float(5,3) DEFAULT NULL,
   `g_dattijd` datetime DEFAULT NULL,
@@ -101,20 +104,23 @@ resulting MySQL-INSERT query:
 
 ```
 $ dsm2sql -u account -c ttyAMA0 -pyrpassword db_name -d
+
+
 /KFM5KAIFA-METER
+
 1-3:0.2.8(42)
-0-0:1.0.0(161106115629W)
+0-0:1.0.0(221228173314W)
 0-0:96.1.1(idfrommymeter)
-1-0:1.8.1(000350.759*kWh)
-1-0:1.8.2(000159.184*kWh)
-1-0:2.8.1(000358.177*kWh)
-1-0:2.8.2(001041.184*kWh)
-0-0:96.14.0(0001)
-1-0:1.7.0(00.000*kW)
-1-0:2.7.0(00.998*kW)
-0-0:96.7.21(00001)
-0-0:96.7.9(00001)
-1-0:99.97.0(1)(0-0:96.7.19)(000101000011W)(2147483647*s)
+1-0:1.8.1(006435.237*kWh)
+1-0:1.8.2(003622.527*kWh)
+1-0:2.8.1(006659.517*kWh)
+1-0:2.8.2(015563.248*kWh)
+0-0:96.14.0(0002)
+1-0:1.7.0(00.138*kW)
+1-0:2.7.0(00.000*kW)
+0-0:96.7.21(00002)
+0-0:96.7.9(00002)
+1-0:99.97.0(3)(0-0:96.7.19)(220916105457S)(0000007818*s)(180823091525S)(0000004075*s)(000101000011W)(2147483647*s)
 1-0:32.32.0(00000)
 1-0:52.32.0(00000)
 1-0:72.32.0(00000)
@@ -124,23 +130,20 @@ $ dsm2sql -u account -c ttyAMA0 -pyrpassword db_name -d
 0-0:96.13.1()
 0-0:96.13.0()
 1-0:31.7.0(000*A)
-1-0:51.7.0(005*A)
-1-0:71.7.0(002*A)
-1-0:21.7.0(00.018*kW)
-1-0:41.7.0(00.000*kW)
-1-0:61.7.0(00.220*kW)
+1-0:51.7.0(000*A)
+1-0:71.7.0(000*A)
+1-0:21.7.0(00.000*kW)
+1-0:41.7.0(00.069*kW)
+1-0:61.7.0(00.068*kW)
 1-0:22.7.0(00.000*kW)
-1-0:42.7.0(01.258*kW)
+1-0:42.7.0(00.000*kW)
 1-0:62.7.0(00.000*kW)
 0-1:24.1.0(003)
 0-1:96.1.0(idfrommymeter)
-0-1:24.2.1(161106110000W)(00185.352*m3)
-!7AC8
-[2016-11-06 10:56:32] INSERT INTO emeter (e_dattijd,
-e_ver_t1,e_ver_t2,e_ter_t1,e_ter_t2,t,
-e_ver_mom,e_ter_mom,g_dattijd,g_ver) VALUES ("2016-11-06
-11:56:29",000350.759,000159.184,000358.177,001041.184,0001,00.000,00.998,"2016-11-06
-11:00:00",00185.352);
+0-1:24.2.1(221228170000W)(06333.950*m3)
+!F714
+[2022-12-28 17:33:19] INSERT INTO emeter (e_dattijd, e_ver_t1,e_ver_t2,e_ter_t1,e_ter_t2,t, e_ver_mom,e_ter_mom,l1,l2,l3,g_dattijd,g_ver) VALUES ("2022-12-28 17:33:14",006435.237,003622.527,006659.517,015563.248,0002,00.138,00.000,000,000,000,"2022-12-28 17:00:00",06333.950);
+
 ```
 
 AUTHOR
