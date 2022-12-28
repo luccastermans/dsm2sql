@@ -100,7 +100,7 @@ EXAMPLE
 =======
 
 To read one telegram using a Raspberry PI from port P1 and view the
-resulting MySQL-INSERT query:
+resulting Mariadb-INSERT query:
 
 ```
 $ dsm2sql -u account -c ttyAMA0 -pyrpassword db_name -d
