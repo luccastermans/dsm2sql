@@ -273,6 +273,12 @@ static void lines2qry(void)
   ASCII dat_out[20];
   ASCII h[7], d[5];
 
+  if ( telegram_ptr[0] == NULL_PTR )
+  {
+    strcat(qry, ";");
+    return;
+  } 
+
   strcat(qry, "INSERT INTO emeter "\
                  "(e_dattijd,"\
                  " e_ver_t1,e_ver_t2,e_ter_t1,e_ter_t2,t,"\
