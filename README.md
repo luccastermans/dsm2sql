@@ -12,7 +12,7 @@ SYNOPSIS
 DESCRIPTION
 ===========
 
-sdm2sql reads telegrams from a Dutch Smart Meter (DSM) from port P1 and
+dsm2sql reads telegrams from a Dutch Smart Meter (DSM) from port P1 and
 convert these to MariaDB-INSERT queries such that the data can be stored
 in a MariaDB or similar database. Each telegram contains a checksum,
 only telegrams with a correct checksum are output by dsm2sql.
