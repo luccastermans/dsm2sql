@@ -282,7 +282,7 @@ static void lines2qry(void)
   strcat(qry, "INSERT INTO emeter "\
                  "(e_dattijd,"\
                  " e_ver_t1,e_ver_t2,e_ter_t1,e_ter_t2,t,"\
-                 " e_ver_mom,e_ter_mom,l1,l2,l3,g_dattijd,g_ver) "\
+                 " e_ver_mom,e_ter_mom,l1,l2,l3) "\
                  "VALUES (");
  
   for ( i = 0;  telegram_ptr[i] != NULL_PTR; i++ )
@@ -364,20 +364,8 @@ static void lines2qry(void)
     {
 
       strcat(qry, d);
-      strcat(qry, ",");
-    }
-    else if ( sscanf(telegram_ptr[i], "0-1:24.2.1(%12sS)(%5s.%3s*m3)", dat_in, h, d) == 3 ||
-              sscanf(telegram_ptr[i], "0-1:24.2.1(%12sW)(%5s.%3s*m3)", dat_in, h, d) == 3   )
-    {
-      date2mysql(dat_in, dat_out);
-    
-      strcat(qry, "\"");
-      strcat(qry, dat_out);
-      strcat(qry, "\",");
-      strcat(qry, h);
-      strcat(qry, ".");
-      strcat(qry, d);
       strcat(qry, ");");
+
     }
   }
 }
