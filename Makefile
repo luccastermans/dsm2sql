@@ -17,7 +17,7 @@
 # along with this program. If not see <http://www.gnu.org/licenses/>.
 #
 
-prefix = /usr
+DESTDIR = /usr/local
 
 CFLAGS = -Wall -Wextra  -I/usr/include/mariadb
 OBJ    = src/dm.o  src/rs232.o  src/db.o  src/get_password.o
@@ -41,11 +41,11 @@ clean:
 
 install:  src/dsm2sql
 	install -D src/dsm2sql \
-		$(DESTDIR)$(prefix)/bin/dsm2sql
+		$(DESTDIR)/bin/dsm2sql
 
 distclean: clean
 
 uninstall:
-	-rm -f $(DESTDIR)$(prefix)/bin/dsm2sql
+	-rm -f $(DESTDIR)/bin/dsm2sql
 
 .PHONY:	all install clean distclean uninstall
